@@ -10,5 +10,8 @@ redis==5.0.0
 httpx==0.25.1
 pytest==7.4.2
 pytest-asyncio==0.21.1
-aioredis==2.0.1
 python-dotenv==1.1.1
+psycopg2-binary==2.9.10
+stripe==12.5.1
+passlib==1.7.4
+python-multipart==0.0.20

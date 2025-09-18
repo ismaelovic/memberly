@@ -38,6 +38,27 @@
                 "DEBUG": "True"
             },
             "justMyCode": false
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Frontend",
+            "runtimeExecutable": "/usr/local/bin/npm",
+            "runtimeArgs": [
+                "run",
+                "frontend"
+            ],
+            "cwd": "${workspaceFolder}/frontend",
+            "envFile": "${workspaceFolder}/.env",
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Debug Frontend in Chrome",
+            "url": "http://localhost:5173",
+            "webRoot": "${workspaceFolder}/frontend/src",
+            "sourceMaps": true
         }
     ]
 }

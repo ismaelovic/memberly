@@ -2,7 +2,9 @@ from datetime import datetime, timedelta
 from typing import Optional, List
 from jose import jwt, JWTError
 from passlib.context import CryptContext
-from core.config import settings
+from .config import settings
+import asyncio
+from redis.asyncio import Redis
 
 # Password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -56,19 +58,25 @@ def decode_token(token: str) -> Optional[dict]:
 
 
 # Token revocation (using Redis as an example)
-import aioredis
-
-redis = aioredis.from_url(settings.redis_url)
+redis = Redis.from_url(settings.redis_url)
 
 
 async def revoke_token(token: str):
-    await redis.set(
-        f"revoked:{token}", "true", ex=settings.access_token_expire_minutes * 60
-    )
+    try:
+        await redis.set(
+            f"revoked:{token}", "true", ex=settings.access_token_expire_minutes * 60
+        )
+    except asyncio.TimeoutError:
+        # Handle timeout error
+        pass
 
 
 async def is_token_revoked(token: str) -> bool:
-    return await redis.exists(f"revoked:{token}") > 0
+    try:
+        return await redis.exists(f"revoked:{token}") > 0
+    except asyncio.TimeoutError:
+        # Handle timeout error
+        return False
 
 
 # Token renewal
