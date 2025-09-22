@@ -1,0 +1,105 @@
+
+/* Header */
+.header {
+  background-color: var(--primary-color);
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.headerContent {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .headerContent {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .headerContent {
+    padding: 0 2rem;
+  }
+}
+
+.headerInner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 4rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logoIcon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background-color: var(--off-white);
+}
+
+.logoText {
+  margin-left: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  /* font-family: var(--font-body);  */
+  color: var(--white);
+  text-decoration: none;
+}
+
+.nav {
+  display: none;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .nav {
+    display: flex;
+  }
+}
+
+.navLink {
+  color: var(--white);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.navLink:hover {
+  color: var(--off-white);
+}
+
+.headerButtons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.signInButton {
+  color: var(--white);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.signInButton:hover {
+  color: var(--off-white)
+}
+
+.getStartedButton {
+  background-color: var(--coral);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.getStartedButton:hover {
+  opacity: 0.9;
+}

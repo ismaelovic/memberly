@@ -1,7 +1,23 @@
 import React, { useState } from 'react';
 import styles from '../modules/Landingpage.module.css';
+import 'react-multi-carousel/lib/styles.css';
 
 import { Play, Check, Star } from 'lucide-react';
+import bmwLogo from '../assets/bmw-logo-svgrepo-com.svg';
+import chanelLogo from '../assets/chanel-2-logo-svgrepo-com.svg';
+import creativeCloudLogo from '../assets/creative-cloud-cc-logo-svgrepo-com.svg';
+import grabLogo from '../assets/grab-logo-svgrepo-com.svg';
+import mercedesLogo from '../assets/mercedes-benz-9-logo-svgrepo-com.svg';
+import porscheLogo from '../assets/porsche-6-logo-svgrepo-com.svg';
+import redbullLogo from '../assets/redbull-logo-svgrepo-com.svg';
+import slackLogo from '../assets/slack-logo-svgrepo-com.svg';
+import sonyLogo from '../assets/sony-2-logo-svgrepo-com.svg';
+import spotifyLogo from '../assets/spotify-1-logo-svgrepo-com.svg'; 
+import northFaceLogo from '../assets/the-north-face-1-logo-svgrepo-com.svg';
+import underArmourLogo from '../assets/under-armour-logo-svgrepo-com.svg';
+import visaLogo from '../assets/visa-logo-svgrepo-com.svg';
+import volkswagenLogo from '../assets/volkswagen-1-logo-svgrepo-com.svg';
+import whatsappLogo from '../assets/whatsapp-icon-logo-svgrepo-com.svg';
 
 const LandingPage = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -28,39 +44,28 @@ const LandingPage = () => {
     },
   ];
 
-  const testimonialLogos = [
-    'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=60&fit=crop',
-    'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=120&h=60&fit=crop',
-    'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=120&h=60&fit=crop',
-    'https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?w=120&h=60&fit=crop',
-    'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=120&h=60&fit=crop',
-    'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=120&h=60&fit=crop',
-  ];
+const testimonialLogos = [
+    bmwLogo,
+    chanelLogo,
+    creativeCloudLogo,
+    grabLogo,
+    mercedesLogo,
+    porscheLogo,
+    redbullLogo,
+    slackLogo,
+    sonyLogo,
+    spotifyLogo,
+    northFaceLogo,
+    underArmourLogo,
+    visaLogo,
+    volkswagenLogo,
+    whatsappLogo,
+];
 
   return (
     <div className={styles.container}>
-      {/* Header */}
-      <header className={styles.header}>
-        <div className={styles.headerContent}>
-          <div className={styles.headerInner}>
-            <div className={styles.logo}>
-              <div className={styles.logoIcon}></div>
-              <span className={styles.logoText}>Memberly</span>
-            </div>
-            <nav className={styles.nav}>
-              <a href="#features" className={styles.navLink}>Features</a>
-              <a href="#how-it-works" className={styles.navLink}>How it works</a>
-              <a href="#pricing" className={styles.navLink}>Pricing</a>
-            </nav>
-            <div className={styles.headerButtons}>
-              <button className={styles.signInButton}>Sign in</button>
-              <button className={styles.getStartedButton}>Get started</button>
-            </div>
-          </div>
-        </div>
-      </header>
 
-      {/* Hero Section */}
+    {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.heroContent}>
           <p className={styles.heroSubtitle}>
@@ -88,16 +93,27 @@ const LandingPage = () => {
             <p className={styles.trustDescription}>
               <strong>Join 10,000+ businesses, gyms, studios, and organizations</strong>
             </p>
-            <div className={styles.logoGrid}>
-              {testimonialLogos.map((logo, index) => (
-                <div key={index} className={styles.logoItem}>
-                  <img
-                    src={logo}
-                    alt={`Client ${index + 1}`}
-                    className={styles.logoImage}
-                  />
-                </div>
-              ))}
+            <div className={styles.logoMarquee}>
+              <div className={styles.logoTrack}>
+                {testimonialLogos.map((logo, index) => (
+                  <div key={index} className={styles.logoItem}>
+                    <img
+                      src={logo}
+                      alt={`Client ${index + 1}`}
+                      className={styles.logoImage}
+                    />
+                  </div>
+                ))}
+                {testimonialLogos.map((logo, index) => (
+                  <div key={`duplicate-${index}`} className={styles.logoItem}>
+                    <img
+                      src={logo}
+                      alt={`Client duplicate ${index + 1}`}
+                      className={styles.logoImage}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -213,7 +229,7 @@ const LandingPage = () => {
       {/* Final CTA Section */}
       <section className={styles.ctaSection}>
         <div className={styles.ctaContent}>
-          <h2 className={styles.ctaTitle}>Ready to transform your business?</h2>
+          <h2 className={styles.ctaTitle}>Ready to <br />transform your business?</h2>
           <p className={styles.ctaSubtitle}>
             Join thousands of businesses already using Memberly to streamline their operations
             and grow their revenue.
@@ -226,19 +242,6 @@ const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className={styles.footer}>
-        <div className={styles.footerContent}>
-          <div className={styles.footerBrand}>
-            <div className={styles.footerLogo}>
-              <div className={styles.footerLogoIcon}></div>
-              <span className={styles.footerLogoText}>Memberly</span>
-            </div>
-            <p className={styles.footerBrandText}>
-              The complete membership platform for modern businesses.
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

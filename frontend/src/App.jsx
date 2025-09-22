@@ -4,17 +4,21 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // import Footer from './pages/Footer';
 // import Login from './pages/Login';
 import LandingPage from './pages/Landingpage';
+import Header from './pages/Header';
+import Footer from './pages/Footer';
+import Login from './pages/Login';
 import './index.css';
 
 const App = () => {
   return (
     <Router>
-      {/* <Navbar /> */}
+      <Header />
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
         {/* Add other routes here */}
       </Routes>
-      {/* <Footer /> */}
+      <Footer />
     </Router>
   );
 };

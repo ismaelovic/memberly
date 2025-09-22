@@ -1,33 +1,36 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from '../modules/Login.module.css';
+import styles from '../modules/Register.module.css';
 
-const Login = () => {
+const Register = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
     try {
       // Replace with actual API call
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
-        throw new Error('Invalid credentials');
+        throw new Error('Registration failed');
       }
 
-      const data = await response.json();
-      // Save token and navigate to dashboard
-      localStorage.setItem('token', data.token);
-      navigate('/dashboard');
+      navigate('/login');
     } catch (err) {
       setError(err.message);
     }
@@ -36,7 +39,7 @@ const Login = () => {
   return (
     <div className={styles.container}>
       <form className={styles.form} onSubmit={handleSubmit}>
-        <h1 className={styles.title}>Login</h1>
+        <h1 className={styles.title}>Register</h1>
         {error && <p className={styles.error}>{error}</p>}
         <input
           type="email"
@@ -54,13 +57,21 @@ const Login = () => {
           className={styles.input}
           required
         />
-        <button type="submit" className={styles.button}>Login</button>
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          className={styles.input}
+          required
+        />
+        <button type="submit" className={styles.button}>Register</button>
         <p className={styles.switchText}>
-          Don't have an account? <span onClick={() => navigate('/register')} className={styles.link}>Register</span>
+          Already have an account? <span onClick={() => navigate('/login')} className={styles.link}>Login</span>
         </p>
       </form>
     </div>
   );
 };
 
-export default Login;
+export default Register;
