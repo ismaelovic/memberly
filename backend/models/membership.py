@@ -1,21 +1,52 @@
-from sqlalchemy import Column, String, DateTime, Boolean, Integer, ForeignKey, Float
-from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from .base import Base
 import datetime
 
 
 class Membership(Base):
     __tablename__ = "memberships"
-    id = Column(Integer, primary_key=True, index=True)
-    member_id = Column(Integer, ForeignKey("members.id"), nullable=False, index=True)
-    plan_name = Column(String, nullable=False)
-    price = Column(Float, nullable=False)
-    start_date = Column(DateTime, default=datetime.datetime.utcnow)
-    end_date = Column(DateTime)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    updated_at = Column(
-        DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+    id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
+    member_id: Mapped[int] = mapped_column(
+        ForeignKey("member_profile.id"), nullable=False, index=True
     )
+    plan_id: Mapped[int] = mapped_column(
+        ForeignKey("subscription_plans.id"), nullable=False, index=True
+    )
+    adjusted_price: Mapped[float] = mapped_column(nullable=True)
+    start_date: Mapped[datetime.datetime] = mapped_column(
+        default=datetime.datetime.utcnow
+    )
+    end_date: Mapped[datetime.datetime] = mapped_column()
+    is_active: Mapped[bool] = mapped_column(default=True)
 
     member = relationship("Member", back_populates="memberships")
+    plan = relationship("SubscriptionPlan", back_populates="memberships")
+    payments = relationship("Payment", back_populates="membership")
+
+
+class SubscriptionPlan(Base):
+    __tablename__ = "subscription_plans"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    tenant_id: Mapped[int] = mapped_column(
+        ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    name: Mapped[str] = mapped_column(nullable=False)
+    description: Mapped[str] = mapped_column(nullable=True)
+    price: Mapped[float] = mapped_column(nullable=False)
+    duration_months: Mapped[int] = mapped_column(
+        nullable=False
+    )  # Duration of the plan in months
+    is_active: Mapped[bool] = mapped_column(nullable=False, default=True)
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        default=datetime.datetime.utcnow, nullable=False
+    )
+    updated_at: Mapped[datetime.datetime] = mapped_column(
+        default=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.utcnow,
+        nullable=False,
+    )
+
+    tenant = relationship("Tenant", back_populates="subscription_plans")
+    memberships = relationship("Membership", back_populates="plan")

@@ -1,9 +1,16 @@
 from .base import Base
-from .user import User
-from .member import Member
+from .user import MemberProfile, MemberAuth
 from .membership import Membership
 from .tenant import Tenant
 from .communication import Communication
 from .payment import Payment
 
-__all__ = ["Base", "User", "Member", "Membership", "Tenant", "Communication", "Payment"]
+__all__ = [
+    "Base",
+    "MemberProfile",
+    "MemberAuth",
+    "Membership",
+    "Tenant",
+    "Communication",
+    "Payment",
+]

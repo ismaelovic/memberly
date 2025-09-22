@@ -6,8 +6,16 @@ import datetime
 
 class Communication(Base):
     __tablename__ = "communications"
-    id = Column(Integer, primary_key=True, index=True)
-    member_id = Column(Integer, ForeignKey("members.id"), nullable=False, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    member_id = Column(
+        Integer, ForeignKey("member_profile.id"), nullable=False, index=True
+    )
+    tenant_id = Column(
+        Integer,
+        ForeignKey("tenants.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
     type = Column(String, nullable=False)  # email, sms, push
     content = Column(String, nullable=False)
     status = Column(String)

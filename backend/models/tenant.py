@@ -1,19 +1,17 @@
-from sqlalchemy import Column, String, DateTime, Boolean, Integer
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from .base import Base
-import datetime
 
 
 class Tenant(Base):
     __tablename__ = "tenants"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, nullable=False, index=True)
-    description = Column(String)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    updated_at = Column(
-        DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
-    )
 
-    users = relationship("User", back_populates="tenant")
+    id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(nullable=False)
+    address: Mapped[str] = mapped_column(nullable=True)
+    phone: Mapped[str] = mapped_column(nullable=True)
+    logo: Mapped[str] = mapped_column(nullable=True)  # URL to the logo image
+
     members = relationship("Member", back_populates="tenant")
+    subscription_plans = relationship("SubscriptionPlan", back_populates="tenant")
+    users = relationship("User", back_populates="tenant")

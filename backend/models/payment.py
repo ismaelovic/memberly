@@ -1,21 +1,29 @@
-from sqlalchemy import Column, String, DateTime, Boolean, Integer, ForeignKey, Float
-from sqlalchemy.orm import relationship
+from sqlalchemy import (
+    Column,
+    Integer,
+    Float,
+    DateTime,
+    ForeignKey,
+)
+from sqlalchemy.orm import Mapped, mapped_column
 from .base import Base
 import datetime
 
 
 class Payment(Base):
     __tablename__ = "payments"
-    id = Column(Integer, primary_key=True, index=True)
-    member_id = Column(Integer, ForeignKey("members.id"), nullable=False, index=True)
-    amount = Column(Float, nullable=False)
-    status = Column(String, nullable=False)
-    payment_date = Column(DateTime, default=datetime.datetime.utcnow)
-    method = Column(String)
-    transaction_id = Column(String, unique=True)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    updated_at = Column(
-        DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
-    )
 
-    member = relationship("Member", back_populates="payments")
+    id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
+    member_id: Mapped[int] = mapped_column(
+        ForeignKey("member_profile.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    membership_id: Mapped[int] = mapped_column(
+        ForeignKey("memberships.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    tenant_id: Mapped[int] = mapped_column(
+        ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    amount: Mapped[float] = mapped_column(nullable=False)
+    payment_date: Mapped[datetime.datetime] = mapped_column(
+        default=datetime.datetime.utcnow, nullable=False
+    )
