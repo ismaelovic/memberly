@@ -5,7 +5,7 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
 )
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import Base
 import datetime
 
@@ -27,3 +27,6 @@ class Payment(Base):
     payment_date: Mapped[datetime.datetime] = mapped_column(
         default=datetime.datetime.utcnow, nullable=False
     )
+
+    membership = relationship("Membership", back_populates="payments")
+    member = relationship("MemberProfile", back_populates="payments")

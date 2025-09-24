@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getEnv } from '../utils/envUtils';
 import styles from '../modules/Login.module.css';
 
 const Login = () => {
   const navigate = useNavigate();
+  const tenantId = getEnv('VITE_TENANT_ID');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -13,10 +15,12 @@ const Login = () => {
     setError('');
 
     try {
-      // Replace with actual API call
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(`${getEnv('VITE_API_URL')}/auth/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Tenant-ID': tenantId,
+        },
         body: JSON.stringify({ email, password }),
       });
 

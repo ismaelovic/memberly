@@ -1,0 +1,363 @@
+/* Container Styles */
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.feature{
+    text-decoration: none;
+    list-style-type: none; /* Ensure no bullets */
+}
+
+.loading {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.registrationCard {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
+  max-width: 900px;
+  width: 100%;
+}
+
+/* Progress Bar Styles */
+.progressContainer {
+  margin-bottom: 2.5rem;
+}
+
+.progressBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.progressItem {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.progressStep {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  position: relative;
+  border: 3px solid #e2e8f0;
+  background: white;
+}
+
+.progressStep.clickable {
+  cursor: pointer;
+}
+
+.progressStep.clickable:hover {
+  transform: scale(1.05);
+}
+
+.progressStep.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+.progressStep.completed {
+  background: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+.progressStep.visited {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+.progressStep.inactive {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #94a3b8;
+}
+
+.stepIcon {
+  font-size: 1.2rem;
+  position: absolute;
+}
+
+.stepNumber {
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.progressLine {
+  width: 120px;
+  height: 3px;
+  background: #e2e8f0;
+  margin: 0 1rem;
+  transition: all 0.3s ease;
+}
+
+.progressLine.completed {
+  background: #10b981;
+}
+
+.stepInfo {
+  text-align: center;
+}
+
+.stepTitle {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.stepCounter {
+  color: #6b7280;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Content Styles */
+.contentContainer {
+  margin: 2rem 0;
+}
+
+.stepContent {
+  min-height: 400px;
+  text-align: center;
+}
+
+.stepHeading {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #1f2937;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* Form Styles */
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.addressSection {
+  margin-top: 1.5rem;
+}
+
+.passwordSection {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  /* border: solid 2px yellow; */
+}
+
+.label {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  /* border: solid 2px red; */
+}
+
+.input {
+  padding: 0.75rem;
+  /* border: 2px dashed green; */
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: white;
+  width: 90%;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.input:hover {
+  border-color: #9ca3af;
+}
+
+.inputError {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+.errorText {
+  color: #ef4444;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.error {
+  color: #ef4444;
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.hint {
+  color: #6b7280;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+/* Plan Selection Styles */
+.plansGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.planCard {
+  border: 3px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  background: white;
+}
+
+.planCard:hover {
+  border-color: #9ca3af;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.planCard.selected {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+}
+
+.planCard.popular {
+  border-color: #f59e0b;
+}
+
+.planCard.popular.selected {
+  border-color: #3b82f6;
+}
+
+.popularBadge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+}
+
+/* Navigation Button Styles */
+.navButton {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.navButton:hover {
+  transform: translateY(-2px);
+}
+
+.nextButton {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.nextButton:hover {
+  background-color: #2563eb;
+}
+
+.prevButton {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.prevButton:hover {
+  background-color: #d1d5db;
+}
+
+.disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.navigationButtons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.card {
+background-color: #f9fafb; /* Tailwind bg-gray-50 */
+padding: 1.5rem; /* Tailwind p-6 */
+border-radius: 0.75rem; /* Tailwind rounded-xl */
+max-width: 28rem; /* Tailwind max-w-md */
+margin-left: auto; /* Tailwind mx-auto */
+margin-right: auto;
+}
+
+.title {
+font-weight: 600; /* Tailwind font-semibold */
+color: #1f2937; /* Tailwind text-gray-800 */
+margin-bottom: 0.5rem; /* Tailwind mb-2 */
+}
+
+.price {
+font-size: 1.5rem; /* Tailwind text-2xl */
+font-weight: 700; /* Tailwind font-bold */
+color: #111827; /* Tailwind text-gray-900 */
+}
+
+.welcome {
+font-size: 0.875rem; /* Tailwind text-sm */
+color: #4b5563; /* Tailwind text-gray-600 */
+margin-top: 0.5rem; /* Tailwind mt-2 */
+}
+
+/* Remove bullet points from the list items */
+.planFeatures {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}

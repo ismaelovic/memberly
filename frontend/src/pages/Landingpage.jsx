@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import styles from '../modules/Landingpage.module.css';
 import 'react-multi-carousel/lib/styles.css';
 
@@ -81,7 +82,7 @@ const testimonialLogos = [
           </p>
           <div className={styles.heroButtons}>
             <button className={styles.primaryButton}>Start free trial</button>
-            <button className={styles.secondaryButton}>Watch demo</button>
+            <Link to="/register" className={styles.secondaryButton}>Register</Link>
           </div>
         </div>
       </section>

@@ -1,15 +1,19 @@
 from fastapi import FastAPI, Response, Request, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
+from pydantic import BaseModel
 
 from backend.api.member import router as member_router
 from backend.api.membership import router as membership_router
 from backend.api.communication import router as communication_router
 from backend.api.payment import router as payment_router
+from backend.api.auth import router as auth_router
+from backend.api.subscriptions import router as subscription_router
 from backend.core.config import settings
 from backend.db.session import engine, get_db
-from backend.models import User
+from backend.models.user import MemberAuth
 from backend.core.security import create_access_token, verify_password
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="Membership Management System API",
@@ -25,10 +29,22 @@ app = FastAPI(
     },
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "*"
+    ],  # Replace "*" with specific origins like ["http://localhost:5173"] for better security
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
+)
+
 app.include_router(member_router, prefix="/api", tags=["Members"])
 app.include_router(membership_router, prefix="/api", tags=["Memberships"])
 app.include_router(communication_router, prefix="/api", tags=["Communications"])
 app.include_router(payment_router, prefix="/api", tags=["Payments"])
+app.include_router(auth_router, prefix="/api", tags=["Authentication"])
+app.include_router(subscription_router, prefix="/api", tags=["Subscriptions"])
 
 
 @app.get("/")
@@ -54,19 +70,24 @@ async def shutdown_event():
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
 @app.post("/auth/login")
 def login(
     response: Response,
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    login_request: LoginRequest,
     db=Depends(get_db),
 ):
-    user = db.query(User).filter(User.email == form_data.username).first()
-    if not user or not verify_password(form_data.password, user.hashed_password):
+    user = db.query(MemberAuth).filter(MemberAuth.email == login_request.email).first()
+    if not user or not verify_password(login_request.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
     access_token = create_access_token(
         data={"sub": user.email},
-        roles=user.roles,
+        role=user.role,
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     )
     response.set_cookie(

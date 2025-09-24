@@ -20,6 +20,7 @@ const Header = () => (
           </nav>
           <div className={headerStyles.headerButtons}>
             <Link to="/login" className={headerStyles.signInButton}>Login</Link>
+            <Link to="/register" className={headerStyles.signInButton}>Register</Link>
             {/* <button className={headerStyles.signInButton}>Sign in</button> */}
             <button className={headerStyles.getStartedButton}>Get started</button>
           </div>

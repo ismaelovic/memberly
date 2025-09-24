@@ -21,4 +21,4 @@ class Communication(Base):
     status = Column(String)
     sent_at = Column(DateTime, default=datetime.datetime.utcnow)
 
-    member = relationship("Member", back_populates="communications")
+    member = relationship("MemberProfile", back_populates="communications")

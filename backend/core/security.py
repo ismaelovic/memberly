@@ -27,13 +27,13 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def create_access_token(
-    data: dict, roles: List[str], expires_delta: Optional[timedelta] = None
+    data: dict, role: str, expires_delta: Optional[timedelta] = None
 ) -> str:
     to_encode = data.copy()
     expire = datetime.utcnow() + (
         expires_delta or timedelta(minutes=settings.access_token_expire_minutes)
     )
-    to_encode.update({"exp": expire, "roles": roles})
+    to_encode.update({"exp": expire, "role": str(role)})  # Ensure role is a string
     return jwt.encode(to_encode, settings.secret_key, algorithm=ALGORITHM)
 
 
@@ -85,6 +85,6 @@ async def is_token_revoked(token: str) -> bool:
 def renew_access_token(token: str) -> Optional[str]:
     payload = decode_token(token)
     if payload:
-        roles = payload.get("roles", [])
-        return create_access_token(data=payload, roles=roles)
+        role = payload.get("role", "")
+        return create_access_token(data=payload, role=role)
     return None
