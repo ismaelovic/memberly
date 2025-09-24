@@ -31,12 +31,10 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "*"
-    ],  # Replace "*" with specific origins like ["http://localhost:5173"] for better security
+    allow_origins=["http://localhost:5173", "https://e6adec89c468.ngrok-free.app"],
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all HTTP methods
-    allow_headers=["*"],  # Allow all headers
+    allow_methods=["*"],
+    allow_headers=["*", "ngrok-skip-browser-warning"],  # Add the custom header here
 )
 
 app.include_router(member_router, prefix="/api", tags=["Members"])

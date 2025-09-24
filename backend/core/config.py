@@ -1,9 +1,12 @@
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 from pydantic import Field
+import os
 
 # Load environment variables from .env file
-load_dotenv()
+load_dotenv(
+    override=True, dotenv_path=os.path.join(os.path.dirname(__file__), "../.env")
+)
 
 
 class Settings(BaseSettings):
@@ -12,6 +15,9 @@ class Settings(BaseSettings):
 
     # Redis settings
     redis_url: str = Field(..., alias="REDIS_URL")
+
+    # Frontend base URL
+    frontend_base_url: str = Field(..., alias="FRONTEND_BASE_URL")
 
     # Application settings
     debug: bool = Field(default=True, alias="DEBUG")
@@ -22,7 +28,7 @@ class Settings(BaseSettings):
     refresh_token_expire_minutes: int = Field(
         default=1440, alias="REFRESH_TOKEN_EXPIRE_MINUTES"
     )
-
+    stripe_api_key: str = Field(..., alias="STRIPE_API_KEY")
     # Multi-tenant settings
     default_tenant: str = Field(default="default", alias="DEFAULT_TENANT")
 

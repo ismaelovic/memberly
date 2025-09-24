@@ -37,16 +37,19 @@ const Register = () => {
     { number: 1, title: 'Plan Selection', icon: '💳' },
     { number: 2, title: 'Personal Info', icon: '👤' },
     { number: 3, title: 'Account Setup', icon: '🔒' },
-    { number: 4, title: 'Confirmation', icon: '✅' }
+    { number: 4, title: 'Confirmation', icon: '✅' },
+    { number: 5, title: 'Payment Details', icon: '💳' },
   ];
 
   // Fetch subscription plans from PostgreSQL
   useEffect(() => {
     const fetchPlans = async () => {
       try {
+        console.log(getEnv('VITE_API_URL'));
         const response = await fetch(`${getEnv('VITE_API_URL')}/api/subscriptions`, {
           headers: {
             'X-Tenant-ID': tenantId,
+            'ngrok-skip-browser-warning': '69420', // Add the custom header here
           },
         });
         
@@ -132,13 +135,6 @@ const Register = () => {
           newErrors.confirmPassword = 'Passwords do not match';
         }
         break;
-      case 4:
-        if (formData.fitnessGoals.length === 0) {
-          newErrors.fitnessGoals = 'Please select at least one fitness goal';
-        }
-        if (!formData.emergencyContact.trim()) newErrors.emergencyContact = 'Emergency contact is required';
-        if (!formData.emergencyPhone.trim()) newErrors.emergencyPhone = 'Emergency phone is required';
-        break;
     }
     
     setErrors(newErrors);
@@ -171,22 +167,49 @@ const Register = () => {
     if (!validateStep(4)) return;
 
     try {
-      const response = await fetch(`${getEnv('VITE_API_URL')}/register`, {
+      // Step 1: Register the user and create a pending payment entry
+      const registerResponse = await fetch(`${getEnv('VITE_API_URL')}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-Tenant-ID': tenantId,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          address: formData.address,
+          phone: formData.phone,
+          subscription_plan_id: formData.selectedPlan,
+        }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (!registerResponse.ok) {
+        const errorData = await registerResponse.json();
         throw new Error(errorData.message || 'Registration failed');
       }
 
-      // Show confirmation screen on successful registration
-      setCurrentStep(5);
+      // Step 2: Create Stripe Checkout session
+      const paymentResponse = await fetch(`${getEnv('VITE_API_URL')}/api/auth/stripe/create-checkout-session`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Tenant-ID': tenantId,
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          subscriptionPlanId: formData.selectedPlan,
+        }),
+      });
+
+      if (!paymentResponse.ok) {
+        const errorData = await paymentResponse.json();
+        throw new Error(errorData.message || 'Failed to initiate payment');
+      }
+
+      const { checkoutUrl } = await paymentResponse.json();
+      window.location.href = checkoutUrl; // Redirect to Stripe Checkout
     } catch (error) {
       setErrors({ submit: error.message });
     }
@@ -490,20 +513,11 @@ const Register = () => {
       case 5:
         return (
           <div className={styles.stepContent}>
-            <div className={styles.confirmationContainer}>
-              <img 
-                src="https://media.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif" 
-                alt="Success GIF" 
-                className={styles.successGif} 
-              />
-              <h3 className={styles.confirmationTitle}>Registration Successful!</h3>
-              <p className={styles.confirmationText}>Welcome aboard! You can now log in from the landing page.</p>
-              <button 
-                className={styles.dashboardButton}
-                onClick={() => navigate('/')}
-              >
-                Go to Landing Page
-              </button>
+            <h3 className={styles.stepHeading}>Enter Payment Details</h3>
+            <p className={styles.stepDescription}>Please provide your payment information to complete the registration.</p>
+            <div className={styles.paymentFormContainer}>
+              {/* Placeholder for Stripe Elements */}
+              <p>Stripe payment form will go here.</p>
             </div>
           </div>
         );
