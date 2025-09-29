@@ -12,12 +12,14 @@ load_dotenv(
 class Settings(BaseSettings):
     # Database settings
     database_url: str = Field(..., alias="DATABASE_URL")
+    default_tenant: str = Field(..., alias="DEFAULT_TENANT")
 
     # Redis settings
     redis_url: str = Field(..., alias="REDIS_URL")
 
-    # Frontend base URL
+    # Base URLs
     frontend_base_url: str = Field(..., alias="FRONTEND_BASE_URL")
+    backend_base_url: str = Field(..., alias="BACKEND_BASE_URL")
 
     # Application settings
     debug: bool = Field(default=True, alias="DEBUG")
@@ -29,6 +31,7 @@ class Settings(BaseSettings):
         default=1440, alias="REFRESH_TOKEN_EXPIRE_MINUTES"
     )
     stripe_api_key: str = Field(..., alias="STRIPE_API_KEY")
+    stripe_signing_secret: str = Field(..., alias="STRIPE_SIGNING_SECRET")
     # Multi-tenant settings
     default_tenant: str = Field(default="default", alias="DEFAULT_TENANT")
 

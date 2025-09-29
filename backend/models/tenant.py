@@ -1,3 +1,4 @@
+from sqlalchemy import BIGINT
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from .base import Base
 

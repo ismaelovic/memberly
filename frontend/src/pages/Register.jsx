@@ -129,11 +129,11 @@ const Register = () => {
         if (!formData.zipCode.trim()) newErrors.zipCode = 'ZIP code is required';
         break;
       case 3:
-        if (!formData.password) newErrors.password = 'Password is required';
-        else if (formData.password.length < 8) newErrors.password = 'Password must be at least 8 characters';
-        if (formData.password !== formData.confirmPassword) {
-          newErrors.confirmPassword = 'Passwords do not match';
-        }
+        // if (!formData.password) newErrors.password = 'Password is required';
+        // else if (formData.password.length < 8) newErrors.password = 'Password must be at least 8 characters';
+        // if (formData.password !== formData.confirmPassword) {
+        //   newErrors.confirmPassword = 'Passwords do not match';
+        // }
         break;
     }
     
@@ -167,7 +167,7 @@ const Register = () => {
     if (!validateStep(4)) return;
 
     try {
-      // Step 1: Register the user and create a pending payment entry
+      // // Step 1: Register the user and create a pending payment entry
       const registerResponse = await fetch(`${getEnv('VITE_API_URL')}/api/auth/register`, {
         method: 'POST',
         headers: {
@@ -175,31 +175,38 @@ const Register = () => {
           'X-Tenant-ID': tenantId,
         },
         body: JSON.stringify({
+          subscription_plan_id: formData.selectedPlan,
           email: formData.email,
           password: formData.password,
           first_name: formData.firstName,
           last_name: formData.lastName,
+          date_of_birth: formData.dateOfBirth,
           address: formData.address,
+          zip_code: formData.zipCode,
           phone: formData.phone,
-          subscription_plan_id: formData.selectedPlan,
+          gender: formData.gender,
         }),
       });
 
       if (!registerResponse.ok) {
         const errorData = await registerResponse.json();
+        console.error(errorData);
         throw new Error(errorData.message || 'Registration failed');
       }
 
+      const { membership_id } = await registerResponse.json(); // Extract membership_id
       // Step 2: Create Stripe Checkout session
-      const paymentResponse = await fetch(`${getEnv('VITE_API_URL')}/api/auth/stripe/create-checkout-session`, {
+      const paymentResponse = await fetch(`${getEnv('VITE_API_URL')}/api/stripe/create-checkout-session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-Tenant-ID': tenantId,
+          'ngrok-skip-browser-warning': '69420', // Ensure this header is included
         },
         body: JSON.stringify({
           email: formData.email,
-          subscriptionPlanId: formData.selectedPlan,
+          subscription_plan_id: formData.selectedPlan,
+          membership_id, // Include membership_id in the request
         }),
       });
 
@@ -213,14 +220,6 @@ const Register = () => {
     } catch (error) {
       setErrors({ submit: error.message });
     }
-  };
-
-  const toggleGoal = (goal) => {
-    const current = formData.fitnessGoals;
-    const updated = current.includes(goal)
-      ? current.filter(g => g !== goal)
-      : [...current, goal];
-    updateFormData('fitnessGoals', updated);
   };
 
   if (loading) {
@@ -568,3 +567,5 @@ const Register = () => {
 };
 
 export default Register;
+
+// Redirect to StripeWrapper after successful registration

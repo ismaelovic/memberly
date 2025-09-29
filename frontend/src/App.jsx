@@ -9,6 +9,9 @@ import Footer from './pages/Footer';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import './index.css';
+import StripeSuccess from './pages/StripeSuccess';
+import StripeFailure from './pages/StripeFailure';
+import UserDashboard from './pages/UserDashboard';
 
 const App = () => {
   return (
@@ -18,6 +21,9 @@ const App = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/stripe_success/" element={<StripeSuccess />} />
+        <Route path="/stripe_failure/" element={<StripeFailure />} />
+        <Route path="/dashboard" element={<UserDashboard />} /> {/* Updated to UserDashboard */}
         {/* Add other routes here */}
       </Routes>
       <Footer />

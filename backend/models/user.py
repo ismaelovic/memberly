@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey
+from sqlalchemy import BIGINT, ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from .base import Base
 import enum
@@ -17,6 +17,7 @@ class MemberState(enum.Enum):
     CANCELLED = "cancelled"
     SUSPENDED = "suspended"
     PAUSED = "paused"
+    PENDING = "pending"
 
 
 class MemberGender(enum.Enum):
@@ -29,10 +30,10 @@ class MemberProfile(Base):
     __tablename__ = "member_profile"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
-    tenant_id: Mapped[int] = mapped_column(
+    tenant_id: Mapped[BIGINT] = mapped_column(
         ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False
     )
-    member_auth_id: Mapped[int] = mapped_column(
+    member_auth_id: Mapped[BIGINT] = mapped_column(
         ForeignKey("member_auth.id", ondelete="CASCADE"), nullable=False
     )
     first_name: Mapped[str] = mapped_column(nullable=False)
@@ -47,7 +48,6 @@ class MemberProfile(Base):
     memberships = relationship("Membership", back_populates="member")
     tenant = relationship("Tenant", back_populates="members")
     communications = relationship("Communication", back_populates="member")
-    payments = relationship("Payment", back_populates="member")
 
 
 class MemberAuth(Base):
@@ -62,7 +62,7 @@ class MemberAuth(Base):
         nullable=False, default=MemberState.ACTIVE
     )
     last_login: Mapped[datetime.datetime] = mapped_column(nullable=True)
-    login_attempts: Mapped[int] = mapped_column(default=0, nullable=False)
+    login_attempts: Mapped[int] = mapped_column(BIGINT, default=0, nullable=False)
     password_reset_token: Mapped[str] = mapped_column(nullable=True)
     password_reset_expiry: Mapped[datetime.datetime] = mapped_column(nullable=True)
 

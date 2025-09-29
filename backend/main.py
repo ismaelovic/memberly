@@ -31,7 +31,12 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "https://e6adec89c468.ngrok-free.app"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:8000",
+        "https://e6adec89c468.ngrok-free.app",
+        "*",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*", "ngrok-skip-browser-warning"],  # Add the custom header here

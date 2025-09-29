@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey
+from sqlalchemy import BIGINT, NUMERIC, ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import JSONB
 from .base import Base
@@ -8,17 +8,17 @@ import datetime
 class Membership(Base):
     __tablename__ = "memberships"
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
-    member_id: Mapped[int] = mapped_column(
+    member_id: Mapped[BIGINT] = mapped_column(
         ForeignKey("member_profile.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    plan_id: Mapped[int] = mapped_column(
+    plan_id: Mapped[BIGINT] = mapped_column(
         ForeignKey("subscription_plans.id"), nullable=False, index=True
     )
-    adjusted_price: Mapped[float] = mapped_column(nullable=True)
+    adjusted_price: Mapped[int] = mapped_column(NUMERIC, nullable=True)
     start_date: Mapped[datetime.datetime] = mapped_column(
-        default=datetime.datetime.utcnow
+        default=datetime.datetime.utcnow, nullable=False
     )
-    end_date: Mapped[datetime.datetime] = mapped_column()
+    end_date: Mapped[datetime.datetime] = mapped_column(nullable=True)
     is_active: Mapped[bool] = mapped_column(default=True)
 
     member = relationship("MemberProfile", back_populates="memberships")
@@ -30,12 +30,12 @@ class SubscriptionPlan(Base):
     __tablename__ = "subscription_plans"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    tenant_id: Mapped[int] = mapped_column(
+    tenant_id: Mapped[BIGINT] = mapped_column(
         ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
     )
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=True)
-    price: Mapped[float] = mapped_column(nullable=False)
+    price: Mapped[int] = mapped_column(NUMERIC, nullable=False)
     duration_months: Mapped[int] = mapped_column(
         nullable=False
     )  # Duration of the plan in months
