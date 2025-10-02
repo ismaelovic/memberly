@@ -1,0 +1,230 @@
+/* Container Styles */
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.registrationCard {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
+  max-width: 900px;
+  width: 100%;
+}
+
+/* Progress Bar Styles */
+.progressContainer {
+  margin-bottom: 2.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.progressBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.progressItem {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.progressStep {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  position: relative;
+  border: 3px solid #e2e8f0;
+  background: white;
+}
+
+.progressStep.clickable {
+  cursor: pointer;
+}
+
+.progressStep.clickable:hover {
+  transform: scale(1.05);
+}
+
+.progressStep.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+.progressStep.completed {
+  background: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+.progressStep.visited {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+.progressStep.inactive {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #94a3b8;
+}
+
+.stepIcon {
+  font-size: 1rem;
+  position: absolute;
+}
+
+.stepNumber {
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.progressLine {
+  width: 100px;
+  height: 3px;
+  background: #e2e8f0;
+  margin: 0 1rem;
+  transition: all 0.3s ease;
+}
+
+.progressLine.completed {
+  background: #10b981;
+}
+
+.stepInfo {
+  text-align: center;
+}
+
+.stepTitle {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.stepCounter {
+  color: #6b7280;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Content Styles */
+.contentContainer {
+  margin: 2rem 0;
+}
+
+.stepContent {
+  min-height: 400px;
+  text-align: center;
+  width: 60%;
+  margin: 0 auto;
+}
+
+/* Form Styles */
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.label {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+input {
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: white;
+  margin-bottom: 1rem;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.input:hover {
+  border-color: #9ca3af;
+}
+
+.inputError {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+.errorText {
+  color: #ef4444;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+/* Navigation Button Styles */
+.navButton {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.navButton:hover {
+  transform: translateY(-2px);
+}
+
+.nextButton {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.nextButton:hover {
+  background-color: #2563eb;
+}
+
+.prevButton {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.prevButton:hover {
+  background-color: #d1d5db;
+}
+
+.disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.navigationButtons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+}

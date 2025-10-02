@@ -2,10 +2,10 @@ from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from backend.db.session import get_db
-from backend.schemas.payment import PaymentCreate, PaymentResponse
+from backend.schemas.payment import PaymentCreate, CheckoutSessionRequest
 from backend.models.payment import Payment
-from backend.models.membership import SubscriptionPlan, Membership
-from typing import List
+from backend.models.membership import Membership
+from backend.models.subscriptions import SubscriptionPlan
 from datetime import datetime
 
 # Placeholder for Stripe integration
@@ -22,17 +22,17 @@ from backend.services.stripe_helper import (
 router = APIRouter()
 
 
-@router.post("/payments", response_model=PaymentResponse)
+@router.post("/payments")
 def process_payment(payment: PaymentCreate, db: Session = Depends(get_db)):
     pass
 
 
-@router.get("/payments", response_model=List[PaymentResponse])
+@router.get("/payments")
 def list_payments(db: Session = Depends(get_db)):
     return db.query(Payment).all()
 
 
-@router.get("/payments/{id}", response_model=PaymentResponse)
+@router.get("/payments/{id}")
 def get_payment(id: int, db: Session = Depends(get_db)):
     payment = db.query(Payment).filter(Payment.id == id).first()
     if not payment:
@@ -40,10 +40,10 @@ def get_payment(id: int, db: Session = Depends(get_db)):
     return payment
 
 
-class CheckoutSessionRequest(BaseModel):
-    subscription_plan_id: int
-    email: str
-    membership_id: int  # Add membership_id to the request model
+@router.get("/payments/membership/{id}")
+def get_payments_by_membership(id: int, db: Session = Depends(get_db)):
+    payments = db.query(Payment).filter(Payment.membership_id == id).all()
+    return payments
 
 
 @router.post("/stripe/create-checkout-session")

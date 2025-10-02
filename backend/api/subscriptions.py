@@ -2,21 +2,10 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from backend.db.session import get_db
-from backend.models.membership import SubscriptionPlan
+from backend.models.subscriptions import SubscriptionPlan
+from backend.schemas.subscriptions import SubscriptionCreate, SubscriptionUpdate
 
 router = APIRouter()
-
-
-class SubscriptionCreate(BaseModel):
-    name: str
-    price: float
-    duration_months: int
-
-
-class SubscriptionUpdate(BaseModel):
-    name: str
-    price: float
-    duration_months: int
 
 
 @router.get("/subscriptions")

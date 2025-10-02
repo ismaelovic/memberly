@@ -13,7 +13,13 @@ from backend.models.user import (
     MemberGender,
     Role,
 )
-from backend.models.membership import Membership, SubscriptionPlan
+from backend.models.membership import Membership
+from backend.models.subscriptions import SubscriptionPlan
+from backend.schemas.auth import (
+    LoginRequest,
+    RegisterMemberRequest,
+    ChangePasswordRequest,
+)
 from backend.core.security import create_access_token, verify_password, hash_password
 from backend.core.config import settings
 from backend.core.logging import logger
@@ -23,9 +29,10 @@ router = APIRouter()
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
-class LoginRequest(BaseModel):
-    email: str
-    password: str
+@router.get("/auth/users")
+def get_users(db: Session = Depends(get_db)):
+    users = db.query(MemberAuth).all()
+    return {"status": "success", "users": users}
 
 
 @router.post("/auth/login")
@@ -50,7 +57,11 @@ def login(
         secure=True,
         samesite="strict",
     )
-    return {"message": "Login successful"}
+    return {
+        "message": "Login successful",
+        "member_auth_id": user.id,
+        "role": user.role.value,
+    }
 
 
 @router.post("/auth/logout")
@@ -61,12 +72,14 @@ def logout(response: Response):
 
 @router.get("/auth/profile/{user_id}")
 def get_profile(user_id: int, request: Request, db: Session = Depends(get_db)):
-    token = request.cookies.get("access_token")
-    if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
+    # token = request.cookies.get("access_token")
+    # if not token:
+    #     raise HTTPException(status_code=401, detail="Not authenticated")
     # Token validation logic here (omitted for brevity)
     # Assuming we have extracted the user's email from the token
-    user = db.query(MemberAuth).filter(MemberAuth.id == user_id).first()
+    user = (
+        db.query(MemberProfile).filter(MemberProfile.member_auth_id == user_id).first()
+    )
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return {"status": "success", "user": user}
@@ -81,22 +94,9 @@ def validate_token(request: Request):
     return {"message": "Token is valid"}
 
 
-class RegisterRequest(BaseModel):
-    email: str
-    password: str
-    first_name: str
-    last_name: str
-    address: str
-    phone: str
-    zip_code: str
-    subscription_plan_id: int
-    date_of_birth: date
-    gender: MemberGender
-
-
 @router.post("/auth/register")
 def register(
-    register_request: RegisterRequest,
+    register_request: RegisterMemberRequest,
     db: Session = Depends(get_db),
 ):
     tenant_object = (
@@ -176,3 +176,22 @@ def register(
         raise HTTPException(
             status_code=500, detail="An error occurred during registration"
         )
+
+
+@router.put("/auth/change-password")
+def change_password(
+    request: ChangePasswordRequest,
+    db: Session = Depends(get_db),
+):
+    user = db.query(MemberAuth).filter(MemberAuth.id == request.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if not verify_password(request.old_password, user.hashed_password):
+        raise HTTPException(status_code=400, detail="Old password is incorrect")
+
+    user.hashed_password = hash_password(request.new_password)
+    db.add(user)
+    db.commit()
+
+    return {"message": "Password changed successfully"}

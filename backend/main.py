@@ -9,6 +9,7 @@ from backend.api.communication import router as communication_router
 from backend.api.payment import router as payment_router
 from backend.api.auth import router as auth_router
 from backend.api.subscriptions import router as subscription_router
+from backend.api.admin import router as admin_router
 from backend.core.config import settings
 from backend.db.session import engine, get_db
 from backend.models.user import MemberAuth
@@ -35,7 +36,6 @@ app.add_middleware(
         "http://localhost:5173",
         "http://localhost:8000",
         "https://e6adec89c468.ngrok-free.app",
-        "*",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -48,6 +48,7 @@ app.include_router(communication_router, prefix="/api", tags=["Communications"])
 app.include_router(payment_router, prefix="/api", tags=["Payments"])
 app.include_router(auth_router, prefix="/api", tags=["Authentication"])
 app.include_router(subscription_router, prefix="/api", tags=["Subscriptions"])
+app.include_router(admin_router, prefix="/api", tags=["Admin"])
 
 
 @app.get("/")
@@ -71,48 +72,3 @@ async def shutdown_event():
 
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
-
-class LoginRequest(BaseModel):
-    email: str
-    password: str
-
-
-@app.post("/auth/login")
-def login(
-    response: Response,
-    login_request: LoginRequest,
-    db=Depends(get_db),
-):
-    user = db.query(MemberAuth).filter(MemberAuth.email == login_request.email).first()
-    if not user or not verify_password(login_request.password, user.hashed_password):
-        raise HTTPException(status_code=400, detail="Invalid credentials")
-
-    access_token = create_access_token(
-        data={"sub": user.email},
-        role=user.role,
-        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
-    )
-    response.set_cookie(
-        key="access_token",
-        value=f"Bearer {access_token}",
-        httponly=True,
-        secure=True,
-        samesite="strict",
-    )
-    return {"message": "Login successful"}
-
-
-@app.post("/auth/logout")
-def logout(response: Response):
-    response.delete_cookie(key="access_token")
-    return {"message": "Logout successful"}
-
-
-@app.get("/auth/validate")
-def validate_token(request: Request):
-    token = request.cookies.get("access_token")
-    if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    # Token validation logic here
-    return {"message": "Token is valid"}

@@ -34,6 +34,16 @@ def get_membership(membership_id: int, db: Session = Depends(get_db)):
     return db_membership
 
 
+@router.get("/memberships/member/{member_id}")
+def get_membership_by_member(member_id: int, db: Session = Depends(get_db)):
+    db_membership = (
+        db.query(Membership.member_id).filter(Membership.member_id == member_id).first()
+    )
+    if not db_membership:
+        raise HTTPException(status_code=404, detail="Membership not found")
+    return {"status": "success", "membership_id": db_membership.member_id}
+
+
 @router.put("/memberships/{membership_id}", response_model=MembershipResponse)
 def update_membership(
     membership_id: int, membership: MembershipUpdate, db: Session = Depends(get_db)

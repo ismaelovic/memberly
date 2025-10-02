@@ -14,7 +14,7 @@
 
 ## SubscriptionPlan
 
-- **Purpose**: Defines subscription plans available to tenants.
+- **Purpose**: Defines subscription plans available to tenants. This model is now located in `models/subscriptions.py`.
 - **Fields**:
   - `id`: Primary key.
   - `tenant_id`: Foreign key linking to the tenant.
@@ -23,6 +23,10 @@
   - `price`: Cost of the plan.
   - `duration_months`: Duration of the plan in months.
   - `is_active`: Indicates if the plan is active.
+  - `is_popular`: Indicates if the plan is marked as popular.
+  - `features`: JSON field for subscription features as a list.
+  - `created_at`: Timestamp of creation.
+  - `updated_at`: Timestamp of last update.
 
 ## Membership
 
