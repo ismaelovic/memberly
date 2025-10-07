@@ -13,6 +13,8 @@ const SystemAdminDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
+  const [inviteMessage, setInviteMessage] = useState("");
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -64,6 +66,36 @@ const SystemAdminDashboard = () => {
     }
   };
 
+  const handleInviteTenantAdmin = async (e) => {
+    e.preventDefault();
+    setInviteMessage("");
+
+    try {
+      const response = await fetch(
+        `${getEnv("VITE_API_URL")}/api/system-admin/invite-tenant-admin`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ email }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to invite tenant admin");
+      }
+
+      const { message } = await response.json();
+      setInviteMessage(message);
+      setEmail("");
+    } catch (err) {
+      setInviteMessage(`Error: ${err.message}`);
+    }
+  };
+
   if (loading) {
     return <div className={styles.loading}>Loading...</div>;
   }
@@ -95,6 +127,22 @@ const SystemAdminDashboard = () => {
       >
         Generate Onboarding Link
       </button>
+
+      <form onSubmit={handleInviteTenantAdmin} className={styles.inviteForm}>
+        <h2>Invite Tenant Admin</h2>
+        <input
+          type="email"
+          placeholder="Enter tenant admin email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className={styles.emailInput}
+        />
+        <button type="submit" className={styles.inviteButton}>
+          Send Invite
+        </button>
+      </form>
+      {inviteMessage && <p className={styles.inviteMessage}>{inviteMessage}</p>}
     </div>
   );
 };

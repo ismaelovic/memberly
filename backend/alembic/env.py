@@ -7,6 +7,11 @@ from sqlalchemy import pool
 
 from alembic import context
 from models.base import Base  # Import the Base class
+from models.subscriptions import SubscriptionPlan  # Import SubscriptionPlan
+from models.membership import Membership  # Import Membership
+from models.tenant import Tenant  # Import other models as needed
+from models.user import MemberAuth
+from models.payment import Payment
 
 # Load environment variables from .env file
 load_dotenv()

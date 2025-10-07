@@ -8,7 +8,9 @@ class Membership(Base):
     __tablename__ = "memberships"
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
     member_id: Mapped[BIGINT] = mapped_column(
-        ForeignKey("member_profile.id", ondelete="CASCADE"), nullable=False, index=True
+        ForeignKey("member_profile.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
     plan_id: Mapped[BIGINT] = mapped_column(
         ForeignKey("subscription_plans.id"), nullable=False, index=True

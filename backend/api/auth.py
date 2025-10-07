@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Response, Request, HTTPException, Depends
-from datetime import timedelta, datetime, date
-from pydantic import BaseModel
+from datetime import timedelta, datetime
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from backend.models.tenant import Tenant
@@ -10,7 +9,6 @@ from backend.models.user import (
     MemberAuth,
     MemberProfile,
     MemberState,
-    MemberGender,
     Role,
 )
 from backend.models.membership import Membership
@@ -24,18 +22,12 @@ from backend.core.security import create_access_token, verify_password, hash_pas
 from backend.core.config import settings
 from backend.core.logging import logger
 
-router = APIRouter()
+router = APIRouter(prefix="/auth")
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
-@router.get("/auth/users")
-def get_users(db: Session = Depends(get_db)):
-    users = db.query(MemberAuth).all()
-    return {"status": "success", "users": users}
-
-
-@router.post("/auth/login")
+@router.post("/login")
 def login(
     response: Response,
     login_request: LoginRequest,
@@ -64,28 +56,13 @@ def login(
     }
 
 
-@router.post("/auth/logout")
+@router.post("/logout")
 def logout(response: Response):
     response.delete_cookie(key="access_token")
     return {"message": "Logout successful"}
 
 
-@router.get("/auth/profile/{user_id}")
-def get_profile(user_id: int, request: Request, db: Session = Depends(get_db)):
-    # token = request.cookies.get("access_token")
-    # if not token:
-    #     raise HTTPException(status_code=401, detail="Not authenticated")
-    # Token validation logic here (omitted for brevity)
-    # Assuming we have extracted the user's email from the token
-    user = (
-        db.query(MemberProfile).filter(MemberProfile.member_auth_id == user_id).first()
-    )
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return {"status": "success", "user": user}
-
-
-@router.get("/auth/validate")
+@router.get("/validate")
 def validate_token(request: Request):
     token = request.cookies.get("access_token")
     if not token:
@@ -94,7 +71,7 @@ def validate_token(request: Request):
     return {"message": "Token is valid"}
 
 
-@router.post("/auth/register")
+@router.post("/register")
 def register(
     register_request: RegisterMemberRequest,
     db: Session = Depends(get_db),
@@ -178,7 +155,7 @@ def register(
         )
 
 
-@router.put("/auth/change-password")
+@router.put("/change-password")
 def change_password(
     request: ChangePasswordRequest,
     db: Session = Depends(get_db),

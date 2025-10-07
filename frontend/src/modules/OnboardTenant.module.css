@@ -162,13 +162,13 @@ input {
   margin-bottom: 1rem;
 }
 
-.input:focus {
+input:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.input:hover {
+input:hover {
   border-color: #9ca3af;
 }
 
@@ -181,6 +181,26 @@ input {
   color: #ef4444;
   font-size: 0.8rem;
   margin-top: 0.25rem;
+}
+
+select {
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: white;
+  margin-bottom: 1rem;
+}
+
+select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+select:hover {
+  border-color: #9ca3af;
 }
 
 /* Navigation Button Styles */

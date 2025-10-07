@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { getEnv } from "../utils/envUtils";
 import styles from "../modules/OnboardTenant.module.css";
 import CreatableSelect from "react-select/creatable";
@@ -11,6 +11,7 @@ const createOption = (label) => ({
 
 const OnboardTenant = () => {
   const navigate = useNavigate();
+  const { token } = useParams(); // Extract token from URL params
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     user: {
@@ -22,6 +23,7 @@ const OnboardTenant = () => {
       dateOfBirth: "",
       address: "",
       zipCode: "",
+      gender: "", // Initialize gender field
     },
     tenant: {
       tenantName: "",
@@ -32,6 +34,42 @@ const OnboardTenant = () => {
   });
   const [errors, setErrors] = useState({});
   const [visitedSteps, setVisitedSteps] = useState(new Set([1]));
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const validateToken = async () => {
+      try {
+        const response = await fetch(
+          `${getEnv("VITE_API_URL")}/api/onboard/${token}`
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText || "Invalid or expired token");
+        }
+
+        const data = await response.json();
+        if (!data.proceed) {
+          throw new Error("Token validation failed");
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    validateToken();
+  }, [token]);
+
+  if (loading) {
+    return <div className={styles.loading}>Validating token...</div>;
+  }
+
+  if (error) {
+    return <div className={styles.error}>{error}</div>;
+  }
 
   const steps = [
     { number: 1, title: "Welcome", icon: "👋" },
@@ -121,11 +159,9 @@ const OnboardTenant = () => {
   };
 
   const nextStep = () => {
-    // if (validateStep(currentStep)) {
     const newStep = currentStep + 1;
     setCurrentStep(newStep);
     setVisitedSteps((prev) => new Set([...prev, newStep]));
-    // }
   };
 
   const prevStep = () => {
@@ -138,34 +174,40 @@ const OnboardTenant = () => {
     if (!validateStep(4)) return;
 
     try {
-      console.log("Form Data:", formData);
-
-      // Ensure the formData is serialized correctly
       const payload = {
         user: {
-          firstName: formData.user.firstName,
-          lastName: formData.user.lastName,
+          first_name: formData.user.firstName,
+          last_name: formData.user.lastName,
           email: formData.user.email,
           password: formData.user.password,
-          confirmPassword: formData.user.confirmPassword,
-          dateOfBirth: formData.user.dateOfBirth,
+          date_of_birth: formData.user.dateOfBirth,
           address: formData.user.address,
-          zipCode: formData.user.zipCode,
+          zip_code: formData.user.zipCode,
+          gender: formData.user.gender,
+          phone: formData.tenant.tenantPhone,
+          role: "tenant_admin",
+          state: "active",
         },
         tenant: {
-          tenantName: formData.tenant.tenantName,
-          tenantAddress: formData.tenant.tenantAddress,
-          tenantPhone: formData.tenant.tenantPhone,
+          name: formData.tenant.tenantName,
+          address: formData.tenant.tenantAddress,
+          phone: formData.tenant.tenantPhone,
         },
-        subscriptions: formData.subscriptions.map((sub) => ({
-          name: sub.name,
-          price: sub.price,
-          features: sub.features,
-        })),
+        subscriptions: Array.isArray(formData.subscriptions)
+          ? formData.subscriptions.map((sub) => ({
+              name: sub.name || "", // Ensure name is a string
+              price: sub.price || 0, // Ensure price is a number
+              features: Array.isArray(sub.features)
+                ? sub.features.map((feature) =>
+                    typeof feature === "string" ? feature : feature.value
+                  )
+                : [], // Ensure features is a list of strings
+            }))
+          : [],
       };
-
+      console.log("Submitting payload:", payload);
       const response = await fetch(
-        `${getEnv("VITE_API_URL")}/api/onboarding/complete`,
+        `${getEnv("VITE_API_URL")}/api/onboard/${token}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -178,7 +220,7 @@ const OnboardTenant = () => {
       }
 
       const { checkoutUrl } = await response.json();
-      window.location.href = checkoutUrl;
+      navigate("/success"); // Redirect to the SuccessPage after successful submission
     } catch (error) {
       setErrors({ submit: error.message });
     }
@@ -198,35 +240,16 @@ const OnboardTenant = () => {
             <div key={step.number} className={styles.progressItem}>
               <div
                 className={`${styles.progressStep} ${
-                  isCompleted
-                    ? styles.completed
-                    : isActive
-                    ? styles.active
-                    : isVisited
-                    ? styles.visited
-                    : styles.inactive
-                } ${isClickable ? styles.clickable : ""}`}
+                  isActive ? styles.active : isCompleted ? styles.completed : ""
+                }`}
                 onClick={() => isClickable && goToStep(step.number)}
               >
-                <span className={styles.stepIcon}>{step.icon}</span>
-                <span className={styles.stepNumber}>{step.number}</span>
+                {step.icon}
               </div>
-              {index < steps.length - 1 && (
-                <div
-                  className={`${styles.progressLine} ${
-                    isCompleted ? styles.completed : ""
-                  }`}
-                />
-              )}
+              <span className={styles.progressTitle}>{step.title}</span>
             </div>
           );
         })}
-      </div>
-      <div className={styles.stepInfo}>
-        <h2 className={styles.stepTitle}>{steps[currentStep - 1]?.title}</h2>
-        <p className={styles.stepCounter}>
-          Step {currentStep} of {steps.length}
-        </p>
       </div>
     </div>
   );
@@ -254,75 +277,117 @@ const OnboardTenant = () => {
         return (
           <div className={styles.stepContent}>
             <h3>User Information</h3>
-            <label>
-              First Name:
-              <input
-                type="text"
-                value={formData.user.firstName}
-                onChange={(e) =>
-                  updateFormData("user", "firstName", e.target.value)
-                }
-              />
-            </label>
-            <label>
-              Last Name:
-              <input
-                type="text"
-                value={formData.user.lastName}
-                onChange={(e) =>
-                  updateFormData("user", "lastName", e.target.value)
-                }
-              />
-            </label>
-            <label>
-              Email:
-              <input
-                type="email"
-                value={formData.user.email}
-                onChange={(e) =>
-                  updateFormData("user", "email", e.target.value)
-                }
-              />
-            </label>
-            <label>
-              Date of Birth:
-              <input
-                type="date"
-                value={formData.user.dateOfBirth}
-                onChange={(e) =>
-                  updateFormData("user", "dateOfBirth", e.target.value)
-                }
-                className={`${styles.input} ${
-                  errors.dateOfBirth ? styles.inputError : ""
-                }`}
-              />
-            </label>
-            <label>
-              Address:
-              <input
-                type="text"
-                value={formData.user.address}
-                onChange={(e) =>
-                  updateFormData("user", "address", e.target.value)
-                }
-                className={`${styles.input} ${
-                  errors.address ? styles.inputError : ""
-                }`}
-              />
-            </label>
-            <label>
-              Zip Code:
-              <input
-                type="text"
-                value={formData.user.zipCode}
-                onChange={(e) =>
-                  updateFormData("user", "zipCode", e.target.value)
-                }
-                className={`${styles.input} ${
-                  errors.zipCode ? styles.inputError : ""
-                }`}
-              />
-            </label>
+            <div className={styles.row}>
+              <label className={styles.inputGroup}>
+                First Name:
+                <input
+                  type="text"
+                  value={formData.user.firstName}
+                  onChange={(e) =>
+                    updateFormData("user", "firstName", e.target.value)
+                  }
+                  className={`${styles.input} ${
+                    errors.firstName ? styles.inputError : ""
+                  }`}
+                />
+              </label>
+              <label className={styles.inputGroup}>
+                Last Name:
+                <input
+                  type="text"
+                  value={formData.user.lastName}
+                  onChange={(e) =>
+                    updateFormData("user", "lastName", e.target.value)
+                  }
+                  className={`${styles.input} ${
+                    errors.lastName ? styles.inputError : ""
+                  }`}
+                />
+              </label>
+            </div>
+
+            <div className={styles.row}>
+              <label className={styles.inputGroup}>
+                Email:
+                <input
+                  type="email"
+                  value={formData.user.email}
+                  onChange={(e) =>
+                    updateFormData("user", "email", e.target.value)
+                  }
+                  className={`${styles.input} ${
+                    errors.email ? styles.inputError : ""
+                  }`}
+                />
+              </label>
+              <label className={styles.inputGroup}>
+                Date of Birth:
+                <input
+                  type="date"
+                  value={formData.user.dateOfBirth}
+                  onChange={(e) =>
+                    updateFormData("user", "dateOfBirth", e.target.value)
+                  }
+                  className={`${styles.input} ${
+                    errors.dateOfBirth ? styles.inputError : ""
+                  }`}
+                />
+              </label>
+            </div>
+
+            <div className={styles.row}>
+              <label className={styles.inputGroup}>
+                Gender:
+                <select
+                  value={formData.user.gender || ""}
+                  onChange={(e) =>
+                    updateFormData("user", "gender", e.target.value)
+                  }
+                  className={`${styles.input} ${
+                    errors.gender ? styles.inputError : ""
+                  }`}
+                >
+                  <option value="" disabled>
+                    Select Gender
+                  </option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+                {errors.gender && (
+                  <p className={styles.errorText}>{errors.gender}</p>
+                )}
+              </label>
+            </div>
+
+            <div className={styles.row}>
+              <label className={styles.inputGroup}>
+                Address:
+                <input
+                  type="text"
+                  value={formData.user.address}
+                  onChange={(e) =>
+                    updateFormData("user", "address", e.target.value)
+                  }
+                  className={`${styles.input} ${
+                    errors.address ? styles.inputError : ""
+                  }`}
+                />
+              </label>
+              <label className={styles.inputGroup}>
+                Zip Code:
+                <input
+                  type="text"
+                  value={formData.user.zipCode}
+                  onChange={(e) =>
+                    updateFormData("user", "zipCode", e.target.value)
+                  }
+                  className={`${styles.input} ${
+                    errors.zipCode ? styles.inputError : ""
+                  }`}
+                />
+              </label>
+            </div>
           </div>
         );
       case 3:

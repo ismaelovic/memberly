@@ -21,7 +21,7 @@ class PaymentCreate(PaymentBase):
     status: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
     @validator("stripe_customer_email")
     def validate_email(cls, v):

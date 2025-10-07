@@ -1,14 +1,16 @@
 from sqlalchemy import BIGINT, NUMERIC, ForeignKey
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy.orm import relationship, Mapped, mapped_column, Session
 from sqlalchemy.dialects.postgresql import JSONB
 from .base import Base
 import datetime
+from typing import List
+from backend.schemas.subscriptions import SubscriptionCreate
 
 
 class SubscriptionPlan(Base):
     __tablename__ = "subscription_plans"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(BIGINT, primary_key=True, index=True)
     tenant_id: Mapped[BIGINT] = mapped_column(
         ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
     )
@@ -34,3 +36,21 @@ class SubscriptionPlan(Base):
 
     tenant = relationship("Tenant", back_populates="subscription_plans")
     memberships = relationship("Membership", back_populates="plan")
+
+
+def create_subscriptions(
+    db: Session, subscriptions_data: List[SubscriptionCreate], tenant_id: int
+):
+    for subscription_data in subscriptions_data:
+        subscription = SubscriptionPlan(
+            tenant_id=tenant_id,
+            name=subscription_data.name,
+            price=subscription_data.price,
+            features=subscription_data.features,
+            duration_months=1,  # To be removed later
+            is_active=subscription_data.is_active,
+            is_popular=subscription_data.is_popular,
+        )
+        db.add(subscription)
+    db.flush()  # Ensure all subscriptions are added
+    return True

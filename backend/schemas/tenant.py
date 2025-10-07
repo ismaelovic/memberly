@@ -9,7 +9,7 @@ class TenantBase(BaseModel):
     logo: Optional[str] = Field(None, description="URL to the tenant's logo")
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
     @validator("phone")
     def validate_phone(cls, value):

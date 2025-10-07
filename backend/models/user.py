@@ -1,29 +1,10 @@
 from sqlalchemy import BIGINT, ForeignKey
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy.orm import relationship, Mapped, mapped_column, Session
+
+from backend.core.security import hash_password
+from backend.schemas.auth import RegisterRequest, MemberGender, MemberState, Role
 from .base import Base
-import enum
 import datetime
-
-
-class Role(enum.Enum):
-    SYSTEM_ADMIN = "system_admin"
-    TENANT_ADMIN = "tenant_admin"
-    STAFF = "staff"
-    MEMBER = "member"
-
-
-class MemberState(enum.Enum):
-    ACTIVE = "active"
-    CANCELLED = "cancelled"
-    SUSPENDED = "suspended"
-    PAUSED = "paused"
-    PENDING = "pending"
-
-
-class MemberGender(enum.Enum):
-    MALE = "male"
-    FEMALE = "female"
-    OTHER = "other"
 
 
 class MemberProfile(Base):
@@ -67,3 +48,30 @@ class MemberAuth(Base):
     password_reset_expiry: Mapped[datetime.datetime] = mapped_column(nullable=True)
 
     profile = relationship("MemberProfile", back_populates="auth", uselist=False)
+
+
+def create_user(db: Session, user_data: RegisterRequest, tenant_id):
+    hashed_password = hash_password(user_data.password)
+    user = MemberAuth(
+        email=user_data.email,
+        hashed_password=hashed_password,
+        role=user_data.role,
+        state=user_data.state,
+        login_attempts=0,
+    )
+    db.add(user)
+    db.flush()  # Ensure the user ID is generated
+
+    profile = MemberProfile(
+        tenant_id=tenant_id,
+        member_auth_id=user.id,
+        first_name=user_data.first_name,
+        last_name=user_data.last_name,
+        birthday=user_data.date_of_birth,
+        gender=user_data.gender,
+        address=user_data.address,
+        zip_code=user_data.zip_code,
+        phone_number=user_data.phone,
+    )
+    db.add(profile)
+    return True

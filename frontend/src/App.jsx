@@ -16,6 +16,7 @@ import ChangePassword from "./pages/ChangePassword";
 import AdminDashboard from "./pages/AdminDashboard";
 import SystemAdminDashboard from "./pages/SystemAdminDashboard";
 import OnboardTenant from "./pages/OnboardTenant";
+import SuccessPage from "./pages/SuccessPage";
 
 const App = () => {
   return (
@@ -36,6 +37,8 @@ const App = () => {
           element={<SystemAdminDashboard />}
         />
         <Route path="/onboard-tenant" element={<OnboardTenant />} />
+        <Route path="/onboard-tenant/:token" element={<OnboardTenant />} />
+        <Route path="/success" element={<SuccessPage />} />
         {/* Add other routes here */}
       </Routes>
       <Footer />

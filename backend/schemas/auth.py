@@ -1,6 +1,27 @@
 from pydantic import BaseModel, Field, validator
-from backend.models.user import MemberGender
 from datetime import date
+import enum
+
+
+class Role(enum.Enum):
+    SYSTEM_ADMIN = "system_admin"
+    TENANT_ADMIN = "tenant_admin"
+    STAFF = "staff"
+    MEMBER = "member"
+
+
+class MemberState(enum.Enum):
+    ACTIVE = "active"
+    CANCELLED = "cancelled"
+    SUSPENDED = "suspended"
+    PAUSED = "paused"
+    PENDING = "pending"
+
+
+class MemberGender(enum.Enum):
+    MALE = "male"
+    FEMALE = "female"
+    OTHER = "other"
 
 
 class LoginRequest(BaseModel):
@@ -8,7 +29,7 @@ class LoginRequest(BaseModel):
     password: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
     @validator("email")
     def validate_email(cls, v):
@@ -31,9 +52,12 @@ class RegisterRequest(LoginRequest):
     zip_code: str
     date_of_birth: date
     gender: MemberGender
+    state: MemberState = Field(default=MemberState.PENDING)
+    role: Role = Field(default=Role.MEMBER)
 
 
 class RegisterMemberRequest(RegisterRequest):
+    tenant_id: int
     subscription_plan_id: int
 
 
